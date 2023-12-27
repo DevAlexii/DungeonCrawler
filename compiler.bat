@@ -1,0 +1,1 @@
+clang.exe -o game.exe -I .\SDL2-2.28.5\include -Xlinker /subsystem:console game.c -L .\SDL2-2.28.5\lib\x64\ -lSDL2 -lSDL2main -lShell32

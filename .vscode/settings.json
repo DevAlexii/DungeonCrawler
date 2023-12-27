@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "stb_image.h": "c",
+        "game.h": "c"
+    }
+}

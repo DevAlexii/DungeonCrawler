@@ -16,6 +16,7 @@ int i_window_opened;
 
 //TileSetVar
 const char file_path[] = "2D Pixel Dungeon Asset Pack\\character and tileset\\Dungeon_Tileset.png";
+const int tile_size = 16;
 
 //GlobalVar
 float f_global_scale = 1;
@@ -73,7 +74,6 @@ void Dungeon_add_rendered_actor_to_main_list(rendered_actor_2d* actor){
 
     actors = Data_struct_list_add(actors,actor_node);
 }
-
 rendered_actor_2d* Dungeon_create_rendered_actor(float pos_x, float pos_y,int tile_x, int tile_y,enum Layer layer) {
     rendered_actor_2d* new_character = malloc(sizeof(rendered_actor_2d));
     if (!new_character) {
@@ -88,7 +88,6 @@ rendered_actor_2d* Dungeon_create_rendered_actor(float pos_x, float pos_y,int ti
 
     return new_character;
 }
-
 character* Dungeon_create_character(float pos_x, float pos_y,int tile_x, int tile_y,enum Layer layer,int move_speed, int playerID ) {
     character* new_character = malloc(sizeof(character));
     if (!new_character) {
@@ -103,7 +102,6 @@ character* Dungeon_create_character(float pos_x, float pos_y,int tile_x, int til
 
     return new_character;
 }
-
 int Dungeon_init_game(){
     //Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0){
@@ -193,7 +191,6 @@ int Dungeon_init_game(){
     i_window_opened = 1;
     return 0;
 }
-
 //------------------------------------------------------------------------Input----------------------------------------------------------------------------
 void Dungeon_move_camera(float amount_X,float amount_Y){
     camera_2d.f_pos_x += amount_X;
@@ -233,13 +230,16 @@ void Dungeon_handle_input(){
             Node* current_actor = actors->head;
             while (current_actor) {
                 character* actor = (character*)current_actor->data;
-                if (actor->i_n_player_controller == 1) {
-                    float new_camera_x = actor->rendered_actor.actor.f_pos_x - (i_window_width * 0.5) / f_global_scale;
-                    float new_camera_y = actor->rendered_actor.actor.f_pos_y - (i_window_height * 0.5) / f_global_scale;
+                if (actor)
+                    {
+                    if (actor->i_n_player_controller == 1) {
+                        float new_camera_x = actor->rendered_actor.actor.f_pos_x - (i_window_width * 0.5) / f_global_scale;
+                        float new_camera_y = actor->rendered_actor.actor.f_pos_y - (i_window_height * 0.5) / f_global_scale;
 
-                    camera_2d.f_pos_x = new_camera_x;
-                    camera_2d.f_pos_y = new_camera_y;
-                    break;
+                        camera_2d.f_pos_x = new_camera_x;
+                        camera_2d.f_pos_y = new_camera_y;
+                        break;
+                    }
                 }
                 current_actor = current_actor->next;
             }   
@@ -334,10 +334,10 @@ int Dungeon_draw_actor(rendered_actor_2d rendered_actor){
     }
     
     SDL_FRect dest_container = {
-        (rendered_actor.actor.f_pos_x - camera_2d.f_pos_x) * f_global_scale, 
-        (rendered_actor.actor.f_pos_y - camera_2d.f_pos_y) * f_global_scale, 
-        16 * f_global_scale, 
-        16 * f_global_scale
+        rendered_actor.layer == Ui ? (rendered_actor.actor.f_pos_x) : (rendered_actor.actor.f_pos_x - camera_2d.f_pos_x) * f_global_scale, 
+        rendered_actor.layer == Ui ? (rendered_actor.actor.f_pos_y) : (rendered_actor.actor.f_pos_y - camera_2d.f_pos_y) * f_global_scale, 
+        rendered_actor.layer == Ui ? tile_size : tile_size * f_global_scale, 
+        rendered_actor.layer == Ui ? tile_size : tile_size * f_global_scale
     };
 
     SDL_FRect camera = {0, 0, i_window_width, i_window_height};

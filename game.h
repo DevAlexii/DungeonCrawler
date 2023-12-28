@@ -183,7 +183,7 @@ int Dungeon_init_game(){
     character* tester_layer_0 = Dungeon_create_character(i_window_width * 0.5, i_window_height * 0.5, 9, 9, First, 235, 1);
     character* tester_2_layer_0 = Dungeon_create_character(20, 0, 9, 9, First, 0, 0);
     character* tester2 = Dungeon_create_character(0, 0, 8, 9, Second, 0, 0);
-    character* tester3 = Dungeon_create_character(0, 0, 8, 9, Second, 0, 0);
+    rendered_actor_2d* tester3 = Dungeon_create_rendered_actor(i_window_width * 0.5, 0, 1, 8, Ui);
 
     actor_2d camera_2d = create_actor(
         tester_layer_0->rendered_actor.actor.f_pos_x,
@@ -195,6 +195,28 @@ int Dungeon_init_game(){
 }
 
 //------------------------------------------------------------------------Input----------------------------------------------------------------------------
+void Dungeon_move_camera(float amount_X,float amount_Y){
+    camera_2d.f_pos_x += amount_X;
+    camera_2d.f_pos_y += amount_Y;
+
+    Node* current_node = actors->head;
+    while (current_node)
+    {
+        if ((character*)current_node->data){
+            if (((character*)current_node->data)->rendered_actor.layer == Ui){
+                ((character*)current_node->data)->rendered_actor.actor.f_pos_x += amount_X;
+                ((character*)current_node->data)->rendered_actor.actor.f_pos_y += amount_Y;
+            }
+        }
+        else if((rendered_actor_2d*)current_node->data){
+            if (((rendered_actor_2d*)current_node->data)->layer == Ui){
+                ((rendered_actor_2d*)current_node->data)->actor.f_pos_x += amount_X;
+                ((rendered_actor_2d*)current_node->data)->actor.f_pos_y += amount_Y;
+            }
+        }
+        current_node = current_node->next;
+    }
+}
 void Dungeon_handle_input(){
     //Window input
     SDL_Event event;
@@ -234,7 +256,7 @@ void Dungeon_handle_input(){
             character* actor = (character*)current_actor->data;
             if (actor->i_n_player_controller == 1)
             {
-                camera_2d.f_pos_x++;
+                Dungeon_move_camera(1,0);
                 actor->rendered_actor.actor.f_pos_x += actor->i_movement_speed * d_delta_time;
                 break;
             }
@@ -247,7 +269,7 @@ void Dungeon_handle_input(){
             character* actor = (character*)current_actor->data;
             if (actor->i_n_player_controller == 1)
             {
-                camera_2d.f_pos_x--;
+                Dungeon_move_camera(-1,0);
                 actor->rendered_actor.actor.f_pos_x-= actor->i_movement_speed * d_delta_time;
                 break;
             }
@@ -260,7 +282,7 @@ void Dungeon_handle_input(){
             character* actor = (character*)current_actor->data;
             if (actor->i_n_player_controller == 1)
             {
-                camera_2d.f_pos_y--;
+                Dungeon_move_camera(0,-1);
                 actor->rendered_actor.actor.f_pos_y -= actor->i_movement_speed * d_delta_time;
                 break;
             }
@@ -273,7 +295,7 @@ void Dungeon_handle_input(){
             character* actor = (character*)current_actor->data;
             if (actor->i_n_player_controller == 1)
             {
-                camera_2d.f_pos_y++;
+                Dungeon_move_camera(0,1);
                 actor->rendered_actor.actor.f_pos_y += actor->i_movement_speed * d_delta_time;
                 break;
             }
@@ -281,7 +303,6 @@ void Dungeon_handle_input(){
         }
     }
 }
-
 //------------------------------------------------------------------------Draw-----------------------------------------------------------------------------
 int Dungeon_get_tile(const int offsetX, const int offsetY, const int width, const int height, int *xCoord, int *yCoord)
 {
@@ -306,7 +327,6 @@ int Dungeon_get_tile(const int offsetX, const int offsetY, const int width, cons
 
     return 0;
 }
-
 int Dungeon_draw_actor(rendered_actor_2d rendered_actor){
 
     if (rendered_actor.i_visible <= 0){
@@ -342,7 +362,6 @@ int Dungeon_draw_actor(rendered_actor_2d rendered_actor){
 
     return 0;
 }
-
 int Dungeon_draw() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
@@ -375,7 +394,6 @@ int Dungeon_draw() {
 
     return 0;
 }
-
 //------------------------------------------------------------------------Fps-------------------------------------------------------------------------------
 void Dungeon_calculate_fps(){
     i_end_time = SDL_GetPerformanceCounter();
@@ -386,7 +404,6 @@ void Dungeon_calculate_fps(){
     //Decomment For Debug count fps
     //SDL_Log("FPS: %d", i_fps);
 }
-
 //--------------------------------------------------------------------Clear memory--------------------------------------------------------------------------
 int Dungeon_clear_memory(){
     SDL_DestroyRenderer(renderer);

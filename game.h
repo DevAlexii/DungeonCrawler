@@ -59,7 +59,6 @@ void Dungeon_add_actor_to_draw_list(rendered_actor_2d* actor){
             break;
     }
 }
-
 void Dungeon_add_character_to_main_list(character* actor){
     Node* actor_node = malloc(sizeof(Node));
     actor_node->data = actor;
@@ -67,18 +66,38 @@ void Dungeon_add_character_to_main_list(character* actor){
 
     actors = Data_struct_list_add(actors,actor_node);
 }
+void Dungeon_add_rendered_actor_to_main_list(rendered_actor_2d* actor){
+    Node* actor_node = malloc(sizeof(Node));
+    actor_node->data = actor;
+    actor_node->next = NULL;
 
-character* Dungeon_create_character(float pos_x, float pos_y, int width, int height, enum Layer layer, int tile_x, int tile_y) {
+    actors = Data_struct_list_add(actors,actor_node);
+}
+
+rendered_actor_2d* Dungeon_create_rendered_actor(float pos_x, float pos_y,int tile_x, int tile_y,enum Layer layer) {
+    rendered_actor_2d* new_character = malloc(sizeof(rendered_actor_2d));
+    if (!new_character) {
+        SDL_Log("Error allocating memory for character");
+        return NULL;
+    }
+
+    *new_character = create_rendered_actor(pos_x, pos_y, 1, tile_x, tile_y,layer);
+
+    Dungeon_add_actor_to_draw_list(new_character);
+    Dungeon_add_rendered_actor_to_main_list(new_character);
+
+    return new_character;
+}
+
+character* Dungeon_create_character(float pos_x, float pos_y,int tile_x, int tile_y,enum Layer layer,int move_speed, int playerID ) {
     character* new_character = malloc(sizeof(character));
     if (!new_character) {
         SDL_Log("Error allocating memory for character");
         return NULL;
     }
 
-    // Inizializza il personaggio
-    *new_character = create_character(pos_x, pos_y, 1, width, height, layer, tile_x, tile_y);
+    *new_character = create_character(pos_x, pos_y, 1, tile_x, tile_y,layer,move_speed,playerID);
 
-    // Aggiungi il personaggio alle liste appropriate
     Dungeon_add_actor_to_draw_list(&new_character->rendered_actor);
     Dungeon_add_character_to_main_list(new_character);
 
@@ -164,6 +183,7 @@ int Dungeon_init_game(){
     character* tester_layer_0 = Dungeon_create_character(i_window_width * 0.5, i_window_height * 0.5, 9, 9, First, 235, 1);
     character* tester_2_layer_0 = Dungeon_create_character(20, 0, 9, 9, First, 0, 0);
     character* tester2 = Dungeon_create_character(0, 0, 8, 9, Second, 0, 0);
+    character* tester3 = Dungeon_create_character(0, 0, 8, 9, Second, 0, 0);
 
     actor_2d camera_2d = create_actor(
         tester_layer_0->rendered_actor.actor.f_pos_x,

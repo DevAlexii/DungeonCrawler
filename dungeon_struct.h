@@ -6,6 +6,13 @@ typedef struct actor_2d{
     float f_pos_y;
 }actor_2d;
 
+/**
+ * Create new actor with given data (it contains only transform)
+ *
+ * @param pos_x - Initial pos X for actor.
+ * @param pos_y - Initial pos Y for actor.
+ * @return created character.
+ */
 actor_2d create_actor(float pos_x ,float pos_y){
 
     actor_2d new_actor;
@@ -26,6 +33,17 @@ typedef struct rendered_actor_2d{
     enum Layer layer;
 }rendered_actor_2d;
 
+/**
+ * Create new rendered actor with given data
+ *
+ * @param pos_x - Initial pos X for actor.
+ * @param pos_y - Initial pos Y for actor.
+ * @param visible - value <= 0 Invisible , value > 0 Visible.
+ * @param tile_x - Tile x.
+ * @param tile_y - Tile y.
+ * @param layer - Actor layer.
+ * @return created character.
+ */
 rendered_actor_2d create_rendered_actor(float pos_x, float pos_y,int visible, int tile_x, int tile_y, enum Layer layer){
     rendered_actor_2d new_actor;
     new_actor.actor = create_actor(pos_x, pos_y);
